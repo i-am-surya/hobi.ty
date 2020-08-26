@@ -16,7 +16,7 @@
 </head>
 <body>
 
-<img class="bgimage" src="img/wave.png" >
+<img class="bgimage-reg" src="img/mirrorwave.png" >
 
   <div class="main">
     <div class="bg-layer">
