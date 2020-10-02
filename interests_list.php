@@ -1,0 +1,225 @@
+<?php
+
+include('security.php');
+include('includes/header.php');
+include('includes/sidebar.php');
+
+?>
+
+<!--DELETE MODAL -->
+
+<div class="modal fade" id="deletemodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Delete Category List?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="code.php" method="POST">
+
+        <div class="modal-body">
+          
+          <input type="hidden" name="delete_id" id="delete_cat_list">
+            Are you sure to delete this category list ?
+          </p>
+
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="submit" name="category_list_delete_button" class="btn btn-danger">Yes</button>
+        </div>
+      </form> 
+    </div>
+  </div> 
+</div>
+
+<!-- DELETE MODAL END -->
+
+
+<!-- ADD CATEGORY LIST MODAL -->
+
+<div class="modal fade" id="categorylistmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add New Category List</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="code.php" method="POST">
+
+        <div class="modal-body">
+            <?php
+
+              $category = "SELECT * FROM interests";
+
+              $category_run = mysqli_query($connection,$category);
+
+              if(mysqli_num_rows($category_run) > 0)
+              {
+                ?>
+              <div class="form-group">
+                <label> Category </label>
+                <select name="category_list_id" class="form-control" required>
+                  <option value="">Choose your Interest Category</option>
+                  <?php
+
+                    foreach($category_run as $row)
+                    {
+                      
+                  ?>
+                  <option value="<?php echo $row['id']; ?>"><?php echo $row['name']; ?></option>
+                  <?php
+                   
+                   }
+
+                  ?>
+                </select>
+              </div>
+              
+                <?php
+
+              }
+              else
+              {
+                echo "No data available !";
+              }
+              
+            ?>
+            
+            <div class="form-group">
+                <label> Category List Name </label>
+                <input type="text" name="name" class="form-control" placeholder="Enter Category List Name" required>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <input type="text" name="description" class="form-control" placeholder="Enter Description" required>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" name="category_list_save" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- END OF ADD CATEGORY MODAL -->
+
+
+<div class="container-fluid">
+  <?php
+  include('includes/topbar.php');
+  ?>
+  
+  <!-- DataTales Example -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h4 class="m-0 font-weight-bold text-info">Categories List 
+      <button type="button" class="btn btn-info mx-2 float-right" data-toggle="modal" data-target="#categorylistmodal">
+       Add 
+      </button>
+      </h6>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+      <?php
+
+      $query = "SELECT * FROM interests_list";
+      $query_run = mysqli_query($connection, $query);
+
+      if(mysqli_num_rows($query_run) > 0)
+      {
+        ?>
+        
+        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+          <thead>
+            <tr>
+              <th class="text-center">ID</th>
+              <th class="text-center">Category</th>
+              <th class="text-center">Category Type</th>
+              <th class="text-center">Description</th>
+              <th class="text-center">Edit</th>
+              <th class="text-center">Delete</th>              
+            </tr>
+          </thead>
+          <tbody>
+
+          <?php
+
+            while($row = mysqli_fetch_assoc($query_run))
+            {
+              $category_id = $row['interests_id'];
+              $category_name = "SELECT * FROM interests WHERE id = '$category_id' ";
+              $category_name_run = mysqli_query($connection, $category_name);
+          ?>
+
+            <tr>
+              <td class="text-center"><?php echo $row['id']; ?></td>
+              <td class="text-center">
+                <?php foreach($category_name_run as $category_row) { echo $category_row['name'];}
+                ?>
+              </td>
+              <td class="text-center"><?php echo $row['listname']; ?></td>
+              <td><?php echo $row['listdescription']; ?></td>
+              <td class="text-center">
+                <form action="interests_list_edit.php" method="post">
+                  <input type="hidden" name="edit_id" value="<?php echo $row['id']; ?>">
+                  <button type="submit" class="btn btn-success" name="category_list_edit_btn"><i class="fas fa-edit"></i></button>
+                </form>
+              </td>    
+              <td class="text-center">
+                  <button type="button" class="btn btn-danger category_list_del_btn"><i class="fas fa-trash-alt"></i></button>
+              </td>      
+            </tr>
+
+            <?php
+              }
+            ?>
+
+          </tbody>
+        </table>
+        <?php
+          }
+          else
+          {
+            echo "No Record Found !";
+          }
+        ?>
+      </div>
+    </div>
+  </div>
+
+
+
+<?php
+
+  include('includes/scripts.php');
+  include('includes/footer.php');
+
+?>
+
+<script>
+
+$(document).ready(function(){
+  $('.category_list_del_btn').on('click', function(){
+
+    $('#deletemodal').modal('show');
+
+    $tr = $(this).closest('tr');
+
+    var data = $tr.children("td").map(function(){
+      return $(this).text();
+    }).get();
+
+    console.log(data);
+
+    $('#delete_cat_list').val(data[0]);
+  });
+});
+
+</script>
